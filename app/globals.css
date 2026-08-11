@@ -21,9 +21,14 @@
   --color-accent-hover: #86b6da;
   --color-accent-ink: #0b0d10;
 
+  --color-accent-faint: rgba(110, 163, 204, 0.12);
+  --color-focus-ring: rgba(110, 163, 204, 0.45);
+
   /* form field states */
   --color-field-bg: #0e1114;
   --color-field-border: #262c35;
+  --color-field-border-focus: var(--color-accent);
+  --color-field-placeholder: var(--color-faint);
 
   /* certificate artifact - light and print-friendly.
      Feature 6a overrides these on a wrapper element to apply brand colors, so
@@ -40,7 +45,8 @@
   --font-cert-display: var(--font-cormorant), "EB Garamond", Georgia, serif;
   --font-cert-body: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
 
-  --radius-DEFAULT: 10px;
+  --radius-panel: 10px;
+  --radius-field: 6px;
   --tracking-label: 0.16em;
 }
 
@@ -52,14 +58,18 @@ body {
 
 /* Displays the fixed-size certificate scaled to the available width. The sheet
    itself never re-lays-out; only the transform changes, which is what keeps the
-   preview and the Puppeteer export identical. */
+   preview and the Puppeteer export identical. The ratio is CERT_WIDTH_PX /
+   CERT_HEIGHT_PX from types/certificate.ts. */
 .cert-fit {
-  container-type: inline-size;
   aspect-ratio: 1123 / 794;
   overflow: hidden;
 }
 
+/* The scale is measured in JS by CertificateFit. Pure CSS cannot express it
+   portably: `calc(100cqw / 1123px)` is CSS Values 4 length division, which
+   Firefox drops (leaving the sheet unscaled and silently cropped by the
+   overflow above), and the tan(atan2()) workaround breaks in Safari. */
 .cert-fit > * {
   transform-origin: top left;
-  transform: scale(min(1, calc(100cqw / 1123px)));
+  transform: scale(var(--cert-scale, 1));
 }

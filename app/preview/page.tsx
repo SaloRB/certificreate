@@ -1,4 +1,5 @@
 import { BlackBorderCertificate } from "@/components/certificate/BlackBorderCertificate";
+import { CertificateFit } from "@/components/certificate/CertificateFit";
 import type { CertificateInput } from "@/types/certificate";
 
 const PLACEHOLDER: CertificateInput = {
@@ -15,9 +16,9 @@ export default function PreviewPage() {
       <h1 className="mb-6 text-xs font-semibold uppercase tracking-label text-muted">
         Certificate preview
       </h1>
-      <div className="cert-fit">
+      <CertificateFit>
         <BlackBorderCertificate input={PLACEHOLDER} />
-      </div>
+      </CertificateFit>
     </main>
   );
 }

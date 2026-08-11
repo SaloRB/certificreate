@@ -1,0 +1,52 @@
+/* Certificreate theme - restored from the discarded /prototype output so
+   editor-mockup.html still opens as the app-chrome design reference.
+   The shipped tokens in app/globals.css are the source of truth; the four
+   certificate colors here were re-synced to match after feature 1 measured them
+   against cert-example.png. */
+
+:root {
+  /* app chrome - surfaces */
+  --bg: #0b0d10;
+  --surface: #121519;
+  --surface-2: #171b21;
+  --border: #232830;
+  --border-strong: #2f3641;
+
+  /* app chrome - text */
+  --text: #e7ebf0;
+  --muted: #9aa4b2;
+  --faint: #5c6672;
+
+  /* accent - the certificate blue, brightened for legibility on dark */
+  --accent: #6ea3cc;
+  --accent-hover: #86b6da;
+  --accent-ink: #0b0d10;
+  --accent-faint: rgba(110, 163, 204, 0.12);
+  --focus-ring: rgba(110, 163, 204, 0.45);
+
+  /* form field states */
+  --field-bg: #0e1114;
+  --field-border: #262c35;
+  --field-border-focus: var(--accent);
+  --field-placeholder: var(--faint);
+
+  /* certificate artifact - stays light and print-friendly */
+  --cert-paper: #ffffff;
+  --cert-ink: #14181c;
+  --cert-ink-soft: #3d444c;
+  --cert-rule: #272727;
+  --cert-frame: #232323;          /* thin outer rule */
+  --cert-border: #4a6178;         /* steel blue double border + logo mark */
+  --cert-border-thin: #8e949c;    /* inner hairline of the double border */
+
+  /* type */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Cormorant Garamond", "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-cert-body: "Lato", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* scale */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --space: 8px;
+  --label-tracking: 0.16em;
+}

@@ -62,7 +62,9 @@ is a no-op alongside an explicit `left` and `width`; `--radius-DEFAULT`
 Each invites a future reader to assume a meaning that is not there.
 **Suggested fix:** Delete all three. Keep `data-certificate` on the sheet - that
 one is the export selector features 3 and 4 will use.
-**Resolution:**
+**Resolution:** Partly repaired in feature 2 step 1: `--radius-DEFAULT` removed and
+replaced with the used `--radius-panel` / `--radius-field`. The two
+`CertificateBody.tsx` items remain open; that file is out of scope for feature 2.
 
 ### F-05 [P3] open - Signature columns are not symmetric about the sheet centre
 
@@ -86,9 +88,12 @@ the old values, so anyone treating it as the token source - as the workflow says
 to - gets stale colours.
 **Suggested fix:** `/complete` discards `prototypes/` for this feature, which
 resolves it. If the mockups are kept for feature 2, sync the four values first.
-**Resolution:**
+**Resolution:** `prototypes/` was discarded at feature 1's completion. Feature 2
+restored the editor mockup from git as `blueprint/references/editor-mockup.html`
+plus `theme.css` (it is the app-chrome design reference) and synced the four
+certificate colours to the shipped tokens before using it.
 
-### F-07 [P3] unverified - Preview scaling relies on calc() length division
+### F-07 [P3] fixed - Preview scaling relies on calc() length division
 
 **File:** app/globals.css:64
 **Found:** 2026-08-11 by /audit (scope: current)
@@ -101,4 +106,11 @@ failing visibly. Unverified because no cross-browser check has been run.
 **Suggested fix:** Check Safari and Firefox when feature 2 builds the real
 preview. If unsupported, fall back to a JS-set scale variable, or accept the
 uncropped overflow by removing `overflow: hidden`.
-**Resolution:**
+**Resolution:** Confirmed real in feature 2 step 4. Firefox 1490 dropped the
+declaration (`transform: none`), rendering the sheet at 1123x794 inside a 900px
+`.cert-fit` and cropping it silently, exactly as predicted; WebKit was fine. The
+`tan(atan2())` workaround was tried and broke WebKit instead. Fixed with the
+finding's named fallback: `components/certificate/CertificateFit.tsx` measures the
+container with a `ResizeObserver` and sets `--cert-scale`, and `.cert-fit` no
+longer needs `container-type`. All three engines now compute the same 0.801425
+matrix with no cropping.
