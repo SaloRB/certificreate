@@ -2,7 +2,7 @@
 
 v1 is a simple, local-only tool: no auth, no database, everything the user keeps lives in browser local storage. Core single-certificate flow first, then styles, local persistence, polish. The export API deploys to Render early (right after the first Puppeteer route works) and auto-deploys from then on — item 9 is production hardening, not first contact.
 
-- [ ] 1. **Certificate template** - recreate the "Black Border" design as a self-contained, themeable HTML/CSS component with placeholder data and the logo mark
+- [x] 1. **Certificate template** - recreate the "Black Border" design as a self-contained, themeable HTML/CSS component with placeholder data and the logo mark
 - [ ] 2. **Form + live preview** - inputs for name, course, date, and instructor (defaulting from brand settings) bound to the template, updating live in the browser
 - [ ] 3. **PNG export** - server route renders the template via full Puppeteer (bundled Chromium, one shared browser instance, new page per request) and returns a high-resolution PNG (`deviceScaleFactor: 2–3`). **Deploy to Render as soon as this works locally** — create the web service, verify the PNG renders identically in production, and leave auto-deploy on for everything after. The deployment will be manual so do not add it as a step. Only add the png creation and export
 - [ ] 4. **PDF export** - same render pipeline (shared browser instance with PNG export) outputs a print-ready landscape PDF with the correct page size and margins (`page.pdf({ landscape: true, printBackground: true })`)
