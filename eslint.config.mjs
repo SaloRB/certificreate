@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Puppeteer loads its config through require(); it cannot be ESM.
+    ".puppeteerrc.cjs",
   ]),
 ]);
 

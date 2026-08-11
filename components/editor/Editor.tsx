@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BlackBorderCertificate } from "@/components/certificate/BlackBorderCertificate";
 import { CertificateFit } from "@/components/certificate/CertificateFit";
 import { CertificateForm } from "@/components/editor/CertificateForm";
+import { DownloadButtons } from "@/components/editor/DownloadButtons";
 import { DEFAULT_CERTIFICATE_INPUT } from "@/lib/certificate-defaults";
 import type { CertificateInput } from "@/types/certificate";
 
@@ -21,13 +22,16 @@ export function Editor() {
       <CertificateForm value={input} onChange={update} />
 
       <div className="rounded-panel border border-border bg-surface p-4 lg:p-8">
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-label text-muted">
-            Preview
-          </p>
-          <span className="text-[11px] text-faint">
-            Black Border &middot; A4 landscape
-          </span>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-label text-muted">
+              Preview
+            </p>
+            <span className="text-[11px] text-faint">
+              Black Border &middot; A4 landscape
+            </span>
+          </div>
+          <DownloadButtons input={input} />
         </div>
 
         <CertificateFit className="mx-auto max-w-[900px]">
