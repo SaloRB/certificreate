@@ -107,9 +107,14 @@ checks do not make the Blueprint unusable.
 - Production server: `npm run start`
 - Lint: `npm run lint`
 - Typecheck: `npx tsc --noEmit`
+- Test: `npm test` (Vitest, single run)
+- Test (watch): `npm run test:watch`
 
-No `test` command exists yet, so the test gate is off. Run `/tests` to add a
-stack-native unit test runner and update this section with the real test command.
+The test gate is on. A build step that adds logic (parsers, formatters,
+validators, id builders, server actions) ships a passing test in the same diff.
+UI components and integration surfaces such as the Puppeteer export routes stay
+out of the suite and ride on screenshot plus build evidence; see the Testing
+section of `blueprint/context/coding-standards.md`.
 
 No `Verify` command and no GitHub Actions workflow exist yet. Run `/ci` when you
 want one combined Verify command and matching automatic GitHub checks.
