@@ -8,6 +8,7 @@ import { DownloadButtons } from "@/components/editor/DownloadButtons";
 import { HistoryPanel } from "@/components/editor/HistoryPanel";
 import { TemplatePicker } from "@/components/editor/TemplatePicker";
 import { resolveInstructor } from "@/lib/brand/storage";
+import { fieldErrors, validateCertificateInput } from "@/lib/certificate/schema";
 import { useBrandSettings } from "@/lib/hooks/use-brand-settings";
 import { useCertificateHistory } from "@/lib/hooks/use-certificate-history";
 import { useLastFormValues } from "@/lib/hooks/use-last-form-values";
@@ -43,6 +44,9 @@ export function Editor() {
   const open = ({ instructor, ...rest }: CertificateInput) =>
     updateValues({ draft: rest, instructorOverride: instructor });
 
+  const parsed = validateCertificateInput(input);
+  const errors = parsed.success ? {} : fieldErrors(parsed.error);
+
   const template = getTemplate(resolveTemplateId(input.templateId));
   const brand: ExportBrand = {
     colors: settings.colors,
@@ -52,7 +56,7 @@ export function Editor() {
   return (
     <main className="mx-auto grid w-full max-w-[1500px] grid-cols-1 items-start gap-6 p-4 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-8 lg:p-8">
       <div className="flex flex-col gap-6">
-        <CertificateForm value={input} onChange={update} />
+        <CertificateForm value={input} errors={errors} onChange={update} />
         <TemplatePicker
           value={input.templateId}
           onChange={(templateId) => update({ templateId })}

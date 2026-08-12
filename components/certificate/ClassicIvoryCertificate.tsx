@@ -1,3 +1,4 @@
+import { AutoFitText } from "@/components/certificate/AutoFitText";
 import {
   CertificateMark,
   MARK_SIZE,
@@ -16,6 +17,11 @@ const NAME_RULE_WIDTH = 560;
 const SIGNATURE_WIDTH = 216;
 /** Symmetric about the sheet centre, unlike Black Border's measured pair. */
 const SIGNATURE_OFFSET = 270;
+
+/** Auto-fit bounds: both blocks may run to two lines before they shrink, which
+ *  is the room the flowed group has above the pinned base row. */
+const NAME = { fontSize: 44, minFontSize: 24, lineHeight: 1.15, maxHeight: 44 * 1.15 * 2 };
+const COURSE = { fontSize: 24, minFontSize: 15, lineHeight: 1.25, maxHeight: 24 * 1.25 * 2 };
 
 /** Centred and quiet: the mark reads as a crest at the top, the award group
  *  flows under it so a long name pushes nothing off the sheet, and the base row
@@ -171,12 +177,14 @@ export function ClassicIvoryCertificate({
           width: CONTENT_WIDTH,
         }}
       >
-        <p
+        <AutoFitText
+          text={input.recipientName}
+          fontSize={NAME.fontSize}
+          minFontSize={NAME.minFontSize}
+          maxHeight={NAME.maxHeight}
           className="font-cert-display"
-          style={{ fontSize: 44, lineHeight: 1.15, minHeight: 44 }}
-        >
-          {input.recipientName}
-        </p>
+          style={{ lineHeight: NAME.lineHeight, minHeight: NAME.fontSize }}
+        />
 
         <div className="mx-auto" style={{ marginTop: 16, width: NAME_RULE_WIDTH }}>
           <CertificateRule width={NAME_RULE_WIDTH} />
@@ -189,17 +197,18 @@ export function ClassicIvoryCertificate({
           Has completed the following Traversy Media course:
         </p>
 
-        <p
+        <AutoFitText
+          text={input.courseTitle}
+          fontSize={COURSE.fontSize}
+          minFontSize={COURSE.minFontSize}
+          maxHeight={COURSE.maxHeight}
           className="font-bold"
           style={{
             marginTop: 12,
-            fontSize: 24,
-            lineHeight: 1.25,
+            lineHeight: COURSE.lineHeight,
             minHeight: 30,
           }}
-        >
-          {input.courseTitle}
-        </p>
+        />
       </div>
 
       <SignatureBlock

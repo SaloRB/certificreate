@@ -1,5 +1,6 @@
 "use client";
 
+import { firstError, validateCertificateInput } from "@/lib/certificate/schema";
 import { useCertificateDownload } from "@/lib/hooks/use-certificate-download";
 import type { ExportBrand } from "@/types/brand";
 import type { CertificateInput } from "@/types/certificate";
@@ -18,6 +19,7 @@ interface DownloadButtonsProps {
 interface DownloadButtonProps {
   label: string;
   isPending: boolean;
+  disabled: boolean;
   variant: "primary" | "secondary";
   compact: boolean;
   onClick: () => void;
@@ -40,6 +42,7 @@ const VARIANTS = {
 function DownloadButton({
   label,
   isPending,
+  disabled,
   variant,
   compact,
   onClick,
@@ -48,7 +51,7 @@ function DownloadButton({
     <button
       type="button"
       onClick={onClick}
-      disabled={isPending}
+      disabled={isPending || disabled}
       className={`${BUTTON_BASE} ${SIZES[compact ? "compact" : "full"]} ${VARIANTS[variant]}`}
     >
       {isPending ? "Rendering..." : label}
@@ -65,6 +68,11 @@ export function DownloadButtons({
   const png = useCertificateDownload("/api/export/png", "certificate.png");
   const pdf = useCertificateDownload("/api/export/pdf", "certificate.pdf");
 
+  // Validated here rather than passed in, so a history row built from an old
+  // stored record is held to the same rule as the live form.
+  const parsed = validateCertificateInput(input);
+  const blockedReason = parsed.success ? null : firstError(parsed.error);
+
   const run = async (download: typeof png.download) => {
     if (await download(input, brand)) onExported?.(input);
   };
@@ -75,6 +83,7 @@ export function DownloadButtons({
         <DownloadButton
           label={compact ? "PDF" : "Download PDF"}
           isPending={pdf.isPending}
+          disabled={blockedReason !== null}
           variant="secondary"
           compact={compact}
           onClick={() => run(pdf.download)}
@@ -82,11 +91,16 @@ export function DownloadButtons({
         <DownloadButton
           label={compact ? "PNG" : "Download PNG"}
           isPending={png.isPending}
+          disabled={blockedReason !== null}
           variant="primary"
           compact={compact}
           onClick={() => run(png.download)}
         />
       </div>
+
+      {blockedReason ? (
+        <p className="text-right text-[11px] text-muted">{blockedReason}</p>
+      ) : null}
 
       {/* Named per format: the two messages stack, so an unlabelled one would
           read as belonging to whichever button sits above it. */}

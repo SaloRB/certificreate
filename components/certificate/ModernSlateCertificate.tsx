@@ -1,3 +1,4 @@
+import { AutoFitText } from "@/components/certificate/AutoFitText";
 import {
   CertificateMark,
   MARK_SIZE,
@@ -13,6 +14,12 @@ const TEXT_WIDTH = 700;
 const ACCENT_RULE = { width: 120, height: 3 };
 const SIGNATURE_WIDTH = 260;
 const SIGNATURE_GAP = 380;
+
+/** Auto-fit bounds. Two lines each is what the flowed group's worst case (noted
+ *  below) was measured against, so shrinking past that keeps the sheet's
+ *  diagonal intact. */
+const NAME = { fontSize: 44, minFontSize: 24, lineHeight: 1.15, maxHeight: 44 * 1.15 * 2 };
+const COURSE = { fontSize: 26, minFontSize: 16, lineHeight: 1.25, maxHeight: 26 * 1.25 * 2 };
 
 /** Absolute from the sheet's top edge, like Black Border, so a block can only be
  *  wrong on its own. The exception is the award group (name, rule, lead, course):
@@ -141,12 +148,14 @@ export function ModernSlateCertificate({
         className="absolute"
         style={{ top: TOP.name, left: CONTENT_LEFT, width: TEXT_WIDTH }}
       >
-        <p
+        <AutoFitText
+          text={input.recipientName}
+          fontSize={NAME.fontSize}
+          minFontSize={NAME.minFontSize}
+          maxHeight={NAME.maxHeight}
           className="font-cert-display font-bold"
-          style={{ fontSize: 44, lineHeight: 1.15, minHeight: 44 }}
-        >
-          {input.recipientName}
-        </p>
+          style={{ lineHeight: NAME.lineHeight, minHeight: NAME.fontSize }}
+        />
         <div
           className="bg-cert-border"
           style={{ marginTop: 26, ...ACCENT_RULE }}
@@ -160,17 +169,18 @@ export function ModernSlateCertificate({
           Has completed the following Traversy Media course:
         </p>
 
-        <p
+        <AutoFitText
+          text={input.courseTitle}
+          fontSize={COURSE.fontSize}
+          minFontSize={COURSE.minFontSize}
+          maxHeight={COURSE.maxHeight}
           className="font-bold"
           style={{
             marginTop: 14,
-            fontSize: 26,
-            lineHeight: 1.25,
+            lineHeight: COURSE.lineHeight,
             minHeight: 33,
           }}
-        >
-          {input.courseTitle}
-        </p>
+        />
       </div>
 
       <SignatureBlock

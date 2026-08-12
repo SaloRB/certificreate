@@ -1,3 +1,4 @@
+import { AutoFitText } from "@/components/certificate/AutoFitText";
 import { CertificateMark } from "@/components/certificate/CertificateMark";
 import { CertificateRule } from "@/components/certificate/CertificateRule";
 import { CERT_WIDTH_PX, type CertificateInput } from "@/types/certificate";
@@ -21,6 +22,18 @@ const TOP = {
   signature: 646,
   mark: 593.5,
 } as const;
+
+/** Auto-fit bounds. The floors are the smallest size still legible at print
+ *  scale. The title's ceiling is the literal gap down to the mark, not a line
+ *  count: two lines at the designed 29px overrun it, so a wrapping title shrinks
+ *  until the pair clears the logo. */
+const NAME = { fontSize: 16, minFontSize: 9 };
+const COURSE = {
+  fontSize: 29,
+  minFontSize: 18,
+  lineHeight: 1.15,
+  maxHeight: TOP.mark - TOP.course,
+};
 
 interface SignatureBlockProps {
   value: string;
@@ -113,19 +126,21 @@ export function CertificateBody({
           width: NAME_RULE_WIDTH,
         }}
       >
-        {/* minHeight holds the rule in place when the name is empty */}
-        <div
+        {/* minHeight holds the rule in place when the name is empty, and the fit
+            is single-line because a wrapped name would push the rule down. */}
+        <AutoFitText
+          text={input.recipientName}
+          fontSize={NAME.fontSize}
+          minFontSize={NAME.minFontSize}
+          singleLine
           className="font-bold uppercase"
           style={{
-            fontSize: 16,
             lineHeight: 1,
-            minHeight: 16,
+            minHeight: NAME.fontSize,
             letterSpacing: "0.26em",
             textIndent: "0.26em",
           }}
-        >
-          {input.recipientName}
-        </div>
+        />
         <div style={{ marginTop: 8 }}>
           <CertificateRule width={NAME_RULE_WIDTH} lineWidth={2} />
         </div>
@@ -138,21 +153,20 @@ export function CertificateBody({
         Has completed the following Traversy Media course:
       </p>
 
-      {/* Capped so a long title wraps inside the frame instead of running out
-          past the border. Shrinking it to fit is feature 8's job. */}
-      <p
-        className="absolute mx-auto font-bold"
+      <AutoFitText
+        text={input.courseTitle}
+        fontSize={COURSE.fontSize}
+        minFontSize={COURSE.minFontSize}
+        maxHeight={COURSE.maxHeight}
+        className="absolute font-bold"
         style={{
           top: TOP.course,
           left: (CERT_WIDTH_PX - CONTENT_WIDTH) / 2,
           width: CONTENT_WIDTH,
-          fontSize: 29,
-          lineHeight: 1.15,
+          lineHeight: COURSE.lineHeight,
           minHeight: 33,
         }}
-      >
-        {input.courseTitle}
-      </p>
+      />
 
       <SignatureBlock
         value={input.instructor}

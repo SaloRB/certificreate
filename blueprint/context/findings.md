@@ -37,7 +37,7 @@ either set the two values as custom properties from the component or add a
 comment at both sites pointing at `types/certificate.ts` as the source.
 **Resolution:**
 
-### F-03 [P2] open - Long course title overlaps the logo mark
+### F-03 [P2] fixed - Long course title overlaps the logo mark
 
 **File:** components/certificate/CertificateBody.tsx:139
 **Found:** 2026-08-11 by /audit (scope: current)
@@ -49,7 +49,11 @@ here so it survives a context clear.
 **Suggested fix:** Feature 8 owns long-name auto-fit and should shrink the title
 to fit its band. Deliberately not fixed in feature 1 to avoid scope creep; the
 active spec's status block records the same deferral.
-**Resolution:**
+**Resolution:** 2026-08-12, feature 8 step 4. `AutoFitText` shrinks the title, and
+its ceiling is `TOP.mark - TOP.course` (the literal gap to the mark) rather than a
+line count, because two lines at the designed 29px overrun it. Verified in the
+browser and in an exported PNG: the title settles at 25px with a 0px gap to the
+mark. Awaiting re-review by `/audit`.
 
 ### F-04 [P3] open - Dead attribute, no-op class, and unused theme token
 

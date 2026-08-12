@@ -1,5 +1,6 @@
 import type { Page, Viewport } from "puppeteer";
 
+import { AUTOFIT_PENDING_ATTRIBUTE } from "@/lib/certificate/autofit";
 import {
   dropRenderLogo,
   putRenderLogo,
@@ -9,6 +10,26 @@ import { withPage } from "@/lib/puppeteer/browser";
 import { renderOrigin } from "@/lib/puppeteer/render-origin";
 import type { ExportBrand } from "@/types/brand";
 import type { CertificateInput } from "@/types/certificate";
+
+/** Only ever reached when hydration never lands, so it can afford to be
+ *  generous: the common path resolves in a frame or two. */
+const AUTOFIT_TIMEOUT_MS = 10_000;
+
+/** The long-name fit runs on the client, so the capture has to wait for it or it
+ *  photographs text at its pre-shrink size. Never fatal: if hydration failed the
+ *  page still holds a complete certificate at the designed sizes, which is a far
+ *  better outcome than refusing an export the user asked for. */
+async function waitForAutoFit(page: Page): Promise<void> {
+  try {
+    await page.waitForFunction(
+      (attribute: string) => !document.querySelector(`[${attribute}]`),
+      { timeout: AUTOFIT_TIMEOUT_MS },
+      AUTOFIT_PENDING_ATTRIBUTE,
+    );
+  } catch {
+    // Timed out. Capture what is on the page.
+  }
+}
 
 interface CaptureOptions<T> {
   /** Applied before navigation, so the page lays out at the capture size once. */
@@ -37,6 +58,7 @@ export async function captureCertificate<T>(
       await page.goto(url, { waitUntil: "networkidle0" });
       // networkidle0 covers the font requests, not the layout that applies them.
       await page.evaluate(() => document.fonts.ready);
+      await waitForAutoFit(page);
 
       return capture(page);
     });
