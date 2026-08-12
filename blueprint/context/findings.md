@@ -175,7 +175,7 @@ unverified. If it fails, append the anchor to `document.body` before `click()`,
 remove it after, and revoke the URL in a `setTimeout` or on the next task.
 **Resolution:**
 
-### F-12 [P3] open - Comment in the download hook describes feature 4 as future work
+### F-12 [P3] fixed - Comment in the download hook describes feature 4 as future work
 
 **File:** lib/hooks/use-certificate-download.ts:22
 **Found:** 2026-08-11 by /audit (scope: current)
@@ -186,4 +186,5 @@ forward reference that accumulates into comments no one trusts.
 **Suggested fix:** Restate it in the present tense, describing what the hook is
 rather than who will use it next: it posts a `CertificateInput` to an export
 endpoint and saves the response under the server-supplied filename.
-**Resolution:**
+**Resolution:** 2026-08-12, feature 7. Rewritten in the present tense while the
+hook was being changed to report success. Awaiting re-review by `/audit`.

@@ -1,31 +1,30 @@
 "use client";
 
-import { useState } from "react";
-
 import { Certificate } from "@/components/certificate/Certificate";
 import { CertificateFit } from "@/components/certificate/CertificateFit";
 import { BrandSettingsPanel } from "@/components/editor/BrandSettingsPanel";
 import { CertificateForm } from "@/components/editor/CertificateForm";
 import { DownloadButtons } from "@/components/editor/DownloadButtons";
+import { HistoryPanel } from "@/components/editor/HistoryPanel";
 import { TemplatePicker } from "@/components/editor/TemplatePicker";
 import { resolveInstructor } from "@/lib/brand/storage";
-import { DEFAULT_CERTIFICATE_DRAFT } from "@/lib/certificate-defaults";
 import { useBrandSettings } from "@/lib/hooks/use-brand-settings";
+import { useCertificateHistory } from "@/lib/hooks/use-certificate-history";
+import { useLastFormValues } from "@/lib/hooks/use-last-form-values";
 import { getTemplate, resolveTemplateId } from "@/lib/templates/resolve";
 import type { ExportBrand } from "@/types/brand";
-import type { CertificateDraft, CertificateInput } from "@/types/certificate";
+import type { CertificateInput } from "@/types/certificate";
 
 export function Editor() {
   const { settings, update: updateSettings } = useBrandSettings();
-  const [draft, setDraft] = useState<CertificateDraft>(
-    DEFAULT_CERTIFICATE_DRAFT,
-  );
-  // Null means "follow brand settings". Deriving the instructor rather than
-  // seeding it into form state is what keeps a settings change from clobbering a
-  // per-certificate edit, in either direction.
-  const [instructorOverride, setInstructorOverride] = useState<string | null>(
-    null,
-  );
+  // Form state lives in local storage rather than component state, so a reload
+  // resumes where the user left off. A null instructor override means "follow
+  // brand settings"; deriving the instructor rather than storing it flat is what
+  // keeps a settings change from clobbering a per-certificate edit, in either
+  // direction.
+  const { values, update: updateValues } = useLastFormValues();
+  const { entries, record, remove, clear } = useCertificateHistory();
+  const { draft, instructorOverride } = values;
 
   const input: CertificateInput = {
     ...draft,
@@ -33,11 +32,16 @@ export function Editor() {
   };
 
   const update = ({ instructor, ...rest }: Partial<CertificateInput>) => {
-    if (instructor !== undefined) setInstructorOverride(instructor);
-    if (Object.keys(rest).length > 0) {
-      setDraft((current) => ({ ...current, ...rest }));
-    }
+    updateValues({
+      draft: { ...draft, ...rest },
+      ...(instructor === undefined ? {} : { instructorOverride: instructor }),
+    });
   };
+
+  // Re-opening pins the instructor it was generated with, rather than letting
+  // the current brand default rewrite a certificate that already went out.
+  const open = ({ instructor, ...rest }: CertificateInput) =>
+    updateValues({ draft: rest, instructorOverride: instructor });
 
   const template = getTemplate(resolveTemplateId(input.templateId));
   const brand: ExportBrand = {
@@ -58,6 +62,14 @@ export function Editor() {
           template={template}
           onChange={updateSettings}
         />
+        <HistoryPanel
+          entries={entries}
+          brand={brand}
+          onOpen={open}
+          onExported={record}
+          onRemove={remove}
+          onClear={clear}
+        />
       </div>
 
       <div className="rounded-panel border border-border bg-surface p-4 lg:p-8">
@@ -70,7 +82,7 @@ export function Editor() {
               {template.name} &middot; A4 landscape
             </span>
           </div>
-          <DownloadButtons input={input} brand={brand} />
+          <DownloadButtons input={input} brand={brand} onExported={record} />
         </div>
 
         <CertificateFit className="mx-auto max-w-[900px]">

@@ -1,7 +1,8 @@
 import type { CertificateDraft, CertificateInput } from "@/types/certificate";
 
 /** Seeds the editor so a first visit shows a complete certificate rather than a
- *  blank sheet. Feature 7 replaces this with the last used values. */
+ *  blank sheet. Also the server and hydration snapshot for the stored last form
+ *  values, which take over once storage has been read. */
 export const DEFAULT_CERTIFICATE_DRAFT: CertificateDraft = {
   recipientName: "Sarah Whitfield",
   courseTitle: "Coding With AI: Planning To Production",

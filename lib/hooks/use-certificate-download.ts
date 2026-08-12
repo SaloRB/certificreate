@@ -20,13 +20,18 @@ function saveBlob(blob: Blob, fileName: string) {
   URL.revokeObjectURL(url);
 }
 
-/** Posts a certificate to an export endpoint and saves what comes back. Feature 4
- *  reuses it for PDF by passing a different endpoint. */
+/** Posts a `CertificateInput` to an export endpoint and saves the response under
+ *  the server-supplied filename; the PNG and PDF buttons differ only by endpoint.
+ *  Resolves to whether the file actually reached the user, so a caller can record
+ *  history for real exports only. */
 export function useCertificateDownload(endpoint: string, fallbackName: string) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const download = async (input: CertificateInput, brand: ExportBrand) => {
+  const download = async (
+    input: CertificateInput,
+    brand: ExportBrand,
+  ): Promise<boolean> => {
     setIsPending(true);
     setError(null);
     try {
@@ -42,7 +47,7 @@ export function useCertificateDownload(endpoint: string, fallbackName: string) {
           .then((body) => body?.error)
           .catch(() => null);
         setError(typeof message === "string" ? message : FALLBACK_ERROR);
-        return;
+        return false;
       }
 
       const fileName = fileNameFrom(
@@ -50,8 +55,10 @@ export function useCertificateDownload(endpoint: string, fallbackName: string) {
         fallbackName,
       );
       saveBlob(await response.blob(), fileName);
+      return true;
     } catch {
       setError(FALLBACK_ERROR);
+      return false;
     } finally {
       setIsPending(false);
     }
