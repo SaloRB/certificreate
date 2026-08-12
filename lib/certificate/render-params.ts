@@ -1,3 +1,4 @@
+import { resolveTemplateId } from "@/lib/templates/resolve";
 import type { CertificateInput } from "@/types/certificate";
 
 /** Both directions of the /render/certificate query string live here so the
@@ -25,6 +26,6 @@ export function fromRenderParams(params: RawParams): CertificateInput {
     courseTitle: first(params.courseTitle),
     date: first(params.date),
     instructor: first(params.instructor),
-    templateId: first(params.templateId) || "black-border",
+    templateId: resolveTemplateId(first(params.templateId)),
   };
 }

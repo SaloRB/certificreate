@@ -1,4 +1,4 @@
-import { BlackBorderCertificate } from "@/components/certificate/BlackBorderCertificate";
+import { Certificate } from "@/components/certificate/Certificate";
 import { fromRenderParams } from "@/lib/certificate/render-params";
 
 /** The capture target for the export routes: one certificate at natural size at
@@ -15,7 +15,7 @@ export default async function RenderCertificatePage({
   // as a hairline down the right and bottom edges.
   return (
     <div className="min-h-screen w-full shrink-0 bg-cert-paper">
-      <BlackBorderCertificate input={input} />
+      <Certificate input={input} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { isTemplateId } from "@/lib/templates/resolve";
 import type { CertificateInput } from "@/types/certificate";
 
 /** Generous cap: long enough for real course titles, short enough that a pasted
@@ -49,6 +50,12 @@ export function parseCertificateInput(value: unknown): ParseResult {
       };
     }
     input[field] = trimmed;
+  }
+
+  // Unlike the render page, an export cannot fall back to the default template:
+  // the caller asked for a specific design and would get a different one back.
+  if (!isTemplateId(input.templateId)) {
+    return { ok: false, error: "Template is not recognised." };
   }
 
   return { ok: true, input };

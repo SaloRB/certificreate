@@ -6,7 +6,7 @@ v1 is a simple, local-only tool: no auth, no database, everything the user keeps
 - [x] 2. **Form + live preview** - inputs for name, course, date, and instructor (defaulting from brand settings) bound to the template, updating live in the browser
 - [x] 3. **PNG export** - server route renders the template via full Puppeteer (bundled Chromium, one shared browser instance, new page per request) and returns a high-resolution PNG (`deviceScaleFactor: 2–3`). **Deploy to Render as soon as this works locally** — create the web service, verify the PNG renders identically in production, and leave auto-deploy on for everything after. The deployment will be manual so do not add it as a step. Only add the png creation and export
 - [x] 4. **PDF export** - same render pipeline (shared browser instance with PNG export) outputs a print-ready landscape PDF with the correct page size and margins (`page.pdf({ landscape: true, printBackground: true })`)
-- [ ] 5. **Template/style system** - a few templates sharing one theme (CSS variables) plus a picker in the UI, structured so new styles drop in cleanly
+- [x] 5. **Template/style system** - a few templates sharing one theme (CSS variables) plus a picker in the UI, structured so new styles drop in cleanly
 - [ ] 6. **Brand settings (local)** - logo upload, colors, and instructor name saved in local storage and applied to the chosen template
   - [ ] 6a. **Instructor + colors** - BrandSettings type, a local-storage store, a settings panel, instructor default, and theme-color overrides applied to the preview and the export
   - [ ] 6b. **Logo upload** - upload a logo (data URL) into brand settings, replace the placeholder mark in the templates, and carry it through the export pipeline

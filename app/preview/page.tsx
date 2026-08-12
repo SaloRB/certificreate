@@ -1,4 +1,4 @@
-import { BlackBorderCertificate } from "@/components/certificate/BlackBorderCertificate";
+import { Certificate } from "@/components/certificate/Certificate";
 import { CertificateFit } from "@/components/certificate/CertificateFit";
 import type { CertificateInput } from "@/types/certificate";
 
@@ -17,7 +17,7 @@ export default function PreviewPage() {
         Certificate preview
       </h1>
       <CertificateFit>
-        <BlackBorderCertificate input={PLACEHOLDER} />
+        <Certificate input={PLACEHOLDER} />
       </CertificateFit>
     </main>
   );

@@ -31,8 +31,12 @@
   --color-field-placeholder: var(--color-faint);
 
   /* certificate artifact - light and print-friendly.
-     Feature 6a overrides these on a wrapper element to apply brand colors, so
-     nothing downstream may hardcode these values. */
+     These declarations exist so Tailwind emits the `bg-cert-paper` /
+     `text-cert-ink` / `font-cert-*` utilities and so a sheet always has a
+     colour; the values a certificate actually paints come from the selected
+     template's `themeVars` in lib/templates/definitions.ts, set on the sheet
+     element by Certificate.tsx. Feature 6a layers brand colours over the same
+     properties there, so nothing downstream may hardcode these values. */
   --color-cert-paper: #ffffff;
   --color-cert-ink: #14181c;
   --color-cert-ink-soft: #3d444c;

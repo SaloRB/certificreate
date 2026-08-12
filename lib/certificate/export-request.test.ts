@@ -4,6 +4,7 @@ import {
   certificateFileName,
   parseCertificateInput,
 } from "@/lib/certificate/export-request";
+import { TEMPLATES } from "@/lib/templates/definitions";
 import type { CertificateInput } from "@/types/certificate";
 
 const VALID: CertificateInput = {
@@ -46,6 +47,29 @@ describe("parseCertificateInput", () => {
   it("rejects a non-object body", () => {
     expect(parseCertificateInput(null).ok).toBe(false);
     expect(parseCertificateInput("Ada").ok).toBe(false);
+  });
+
+  it("accepts every template in the registry", () => {
+    for (const template of TEMPLATES) {
+      const result = parseCertificateInput({
+        ...VALID,
+        templateId: template.id,
+      });
+
+      expect(result).toEqual({
+        ok: true,
+        input: { ...VALID, templateId: template.id },
+      });
+    }
+  });
+
+  it("rejects an unknown template id", () => {
+    const result = parseCertificateInput({ ...VALID, templateId: "nope" });
+
+    expect(result).toEqual({
+      ok: false,
+      error: "Template is not recognised.",
+    });
   });
 
   it("rejects an over-long field", () => {
