@@ -1,4 +1,5 @@
 import { parseBrandColors } from "@/lib/brand/colors";
+import { isLogoDataUrl } from "@/lib/brand/logo";
 import { DEFAULT_INSTRUCTOR } from "@/lib/certificate-defaults";
 import type { BrandSettings } from "@/types/brand";
 
@@ -22,8 +23,7 @@ export function parseBrandSettings(value: unknown): BrandSettings {
   const record = value as Record<string, unknown>;
 
   return {
-    logoDataUrl:
-      typeof record.logoDataUrl === "string" ? record.logoDataUrl : null,
+    logoDataUrl: isLogoDataUrl(record.logoDataUrl) ? record.logoDataUrl : null,
     instructor:
       typeof record.instructor === "string"
         ? record.instructor.trim()

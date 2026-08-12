@@ -1,4 +1,7 @@
-import { CertificateMark } from "@/components/certificate/CertificateMark";
+import {
+  CertificateMark,
+  MARK_SIZE,
+} from "@/components/certificate/CertificateMark";
 import { CertificateRule } from "@/components/certificate/CertificateRule";
 import { CERT_WIDTH_PX, type CertificateInput } from "@/types/certificate";
 
@@ -10,7 +13,6 @@ const TEXT_WIDTH = 700;
 const ACCENT_RULE = { width: 120, height: 3 };
 const SIGNATURE_WIDTH = 260;
 const SIGNATURE_GAP = 380;
-const MARK_SIZE = 121;
 
 /** Absolute from the sheet's top edge, like Black Border, so a block can only be
  *  wrong on its own. The exception is the award group (name, rule, lead, course):
@@ -72,9 +74,13 @@ function SignatureBlock({ value, caption, left }: SignatureBlockProps) {
 
 interface ModernSlateCertificateProps {
   input: CertificateInput;
+  logoDataUrl?: string | null;
 }
 
-export function ModernSlateCertificate({ input }: ModernSlateCertificateProps) {
+export function ModernSlateCertificate({
+  input,
+  logoDataUrl,
+}: ModernSlateCertificateProps) {
   return (
     <div className="absolute inset-0 text-left">
       <div
@@ -87,7 +93,7 @@ export function ModernSlateCertificate({ input }: ModernSlateCertificateProps) {
         className="absolute"
         style={{ top: TOP.mark, left: CERT_WIDTH_PX - MARGIN_RIGHT - MARK_SIZE }}
       >
-        <CertificateMark />
+        <CertificateMark logoDataUrl={logoDataUrl} />
       </div>
 
       <h1

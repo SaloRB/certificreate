@@ -16,7 +16,11 @@ export interface TemplateDefinition {
 }
 
 /** Every template renders the same payload into the same fixed-size sheet; the
- *  wrapper, the theme vars, and the sizing belong to the entry component. */
+ *  wrapper, the theme vars, and the sizing belong to the entry component.
+ *
+ *  The logo rides beside `input` rather than inside it: it is a brand setting,
+ *  one per browser, and `CertificateInput` is copied per certificate by history. */
 export type CertificateTemplateComponent = ComponentType<{
   input: CertificateInput;
+  logoDataUrl?: string | null;
 }>;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Field } from "@/components/editor/Field";
+import { LogoField } from "@/components/editor/LogoField";
 import {
   BRAND_COLOR_LABELS,
   BRAND_COLOR_VARS,
@@ -122,6 +123,13 @@ export function BrandSettingsPanel({
         hint="Saved in this browser and used for new certificates."
         onChange={(instructor) => onChange({ instructor })}
       />
+
+      <div className="mt-5">
+        <LogoField
+          value={settings.logoDataUrl}
+          onChange={(logoDataUrl) => onChange({ logoDataUrl })}
+        />
+      </div>
 
       <p className="mb-3 mt-5 text-[11px] uppercase tracking-[0.06em] text-muted">
         Colors

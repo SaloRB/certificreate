@@ -4,15 +4,19 @@ import type { CertificateInput } from "@/types/certificate";
 
 interface BlackBorderCertificateProps {
   input: CertificateInput;
+  logoDataUrl?: string | null;
 }
 
 /** Artwork only. The sheet, its size, and its theme vars belong to
  *  `Certificate`, so every template draws into the same canvas. */
-export function BlackBorderCertificate({ input }: BlackBorderCertificateProps) {
+export function BlackBorderCertificate({
+  input,
+  logoDataUrl,
+}: BlackBorderCertificateProps) {
   return (
     <>
       <CertificateFrame />
-      <CertificateBody input={input} />
+      <CertificateBody input={input} logoDataUrl={logoDataUrl} />
     </>
   );
 }

@@ -18,3 +18,11 @@ export interface BrandSettings {
   instructor: string;
   colors: BrandColors;
 }
+
+/** The brand half of an export request: everything the render needs that is not
+ *  part of `CertificateInput`. One object rather than loose arguments, so a
+ *  future brand field does not change four signatures. */
+export interface ExportBrand {
+  colors: BrandColors;
+  logoDataUrl: string | null;
+}

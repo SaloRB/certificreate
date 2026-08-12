@@ -38,6 +38,19 @@ describe("render params round trip", () => {
     expect(toRenderParams(INPUT, {}).has("colors")).toBe(false);
     expect(roundTrip(INPUT).colors).toEqual({});
   });
+
+  it("carries a logo handoff token", () => {
+    const params = toRenderParams(INPUT, undefined, "token-123");
+
+    expect(fromRenderParams(Object.fromEntries(params)).logoToken).toBe(
+      "token-123",
+    );
+  });
+
+  it("omits the logo param when there is no token", () => {
+    expect(toRenderParams(INPUT).has("logo")).toBe(false);
+    expect(roundTrip(INPUT).logoToken).toBe("");
+  });
 });
 
 describe("fromRenderParams", () => {

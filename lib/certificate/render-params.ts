@@ -9,11 +9,15 @@ import type { CertificateInput } from "@/types/certificate";
 export interface RenderPayload {
   input: CertificateInput;
   colors: BrandColors;
+  /** Handoff token for a brand logo, redeemed by the render page. The image
+   *  itself is far too large for a URL. */
+  logoToken: string;
 }
 
 export function toRenderParams(
   input: CertificateInput,
   colors?: BrandColors,
+  logoToken?: string,
 ): URLSearchParams {
   const params = new URLSearchParams({
     recipientName: input.recipientName,
@@ -28,6 +32,8 @@ export function toRenderParams(
   if (colors && Object.keys(colors).length > 0) {
     params.set("colors", JSON.stringify(colors));
   }
+
+  if (logoToken) params.set("logo", logoToken);
 
   return params;
 }
@@ -60,5 +66,6 @@ export function fromRenderParams(params: RawParams): RenderPayload {
       templateId: resolveTemplateId(first(params.templateId)),
     },
     colors: decodeColors(first(params.colors)),
+    logoToken: first(params.logo),
   };
 }

@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 
 import { handleExportRequest } from "@/lib/certificate/export-route";
 import { captureCertificate } from "@/lib/puppeteer/capture-certificate";
-import type { BrandColors } from "@/types/brand";
+import type { ExportBrand } from "@/types/brand";
 import {
   CERT_HEIGHT_PX,
   CERT_WIDTH_PX,
@@ -11,9 +11,9 @@ import {
 
 export const runtime = "nodejs";
 
-function renderPdf(input: CertificateInput, colors: BrandColors) {
+function renderPdf(input: CertificateInput, brand: ExportBrand) {
   return captureCertificate(input, {
-    colors,
+    brand,
     capture: async (page) => {
       // page.pdf() switches to print media, which repaints the page. The whole
       // premise here is that preview and export never diverge, so stay on screen.

@@ -1,4 +1,7 @@
-import { CertificateMark } from "@/components/certificate/CertificateMark";
+import {
+  CertificateMark,
+  MARK_SIZE,
+} from "@/components/certificate/CertificateMark";
 import { CertificateRule } from "@/components/certificate/CertificateRule";
 import {
   CERT_HEIGHT_PX,
@@ -13,7 +16,6 @@ const NAME_RULE_WIDTH = 560;
 const SIGNATURE_WIDTH = 216;
 /** Symmetric about the sheet centre, unlike Black Border's measured pair. */
 const SIGNATURE_OFFSET = 270;
-const MARK_SIZE = 121;
 
 /** Centred and quiet: the mark reads as a crest at the top, the award group
  *  flows under it so a long name pushes nothing off the sheet, and the base row
@@ -108,10 +110,12 @@ function SignatureBlock({ value, caption, centre }: SignatureBlockProps) {
 
 interface ClassicIvoryCertificateProps {
   input: CertificateInput;
+  logoDataUrl?: string | null;
 }
 
 export function ClassicIvoryCertificate({
   input,
+  logoDataUrl,
 }: ClassicIvoryCertificateProps) {
   return (
     <div className="absolute inset-0 text-center">
@@ -121,7 +125,7 @@ export function ClassicIvoryCertificate({
         className="absolute"
         style={{ top: TOP.mark, left: (CERT_WIDTH_PX - MARK_SIZE) / 2 }}
       >
-        <CertificateMark />
+        <CertificateMark logoDataUrl={logoDataUrl} />
       </div>
 
       <h1

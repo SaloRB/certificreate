@@ -1,6 +1,7 @@
 import { parseBrandColors } from "@/lib/brand/colors";
+import { isLogoDataUrl } from "@/lib/brand/logo";
 import { isTemplateId } from "@/lib/templates/resolve";
-import type { BrandColors } from "@/types/brand";
+import type { ExportBrand } from "@/types/brand";
 import type { CertificateInput } from "@/types/certificate";
 
 /** Generous cap: long enough for real course titles, short enough that a pasted
@@ -24,12 +25,12 @@ const FIELD_LABELS: Record<(typeof REQUIRED_FIELDS)[number], string> = {
 };
 
 export type ParseResult =
-  | { ok: true; input: CertificateInput; colors: BrandColors }
+  | { ok: true; input: CertificateInput; brand: ExportBrand }
   | { ok: false; error: string };
 
 /** Boundary validation for the export routes. Feature 8 swaps this for Zod.
  *
- *  Brand colours are optional and never fatal: a stale or unusable override
+ *  Brand values are optional and never fatal: a stale or unusable colour or logo
  *  falls back to the template rather than failing an export the user asked for. */
 export function parseCertificateInput(value: unknown): ParseResult {
   if (typeof value !== "object" || value === null) {
@@ -63,7 +64,14 @@ export function parseCertificateInput(value: unknown): ParseResult {
     return { ok: false, error: "Template is not recognised." };
   }
 
-  return { ok: true, input, colors: parseBrandColors(record.colors) };
+  return {
+    ok: true,
+    input,
+    brand: {
+      colors: parseBrandColors(record.colors),
+      logoDataUrl: isLogoDataUrl(record.logoDataUrl) ? record.logoDataUrl : null,
+    },
+  };
 }
 
 /** Slug of the recipient name, falling back when it has no ASCII word characters

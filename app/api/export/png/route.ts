@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 
 import { handleExportRequest } from "@/lib/certificate/export-route";
 import { captureCertificate } from "@/lib/puppeteer/capture-certificate";
-import type { BrandColors } from "@/types/brand";
+import type { ExportBrand } from "@/types/brand";
 import {
   CERT_HEIGHT_PX,
   CERT_WIDTH_PX,
@@ -14,9 +14,9 @@ export const runtime = "nodejs";
 /** Print-sharp without the render cost of 3x. */
 const DEVICE_SCALE_FACTOR = 2;
 
-function renderPng(input: CertificateInput, colors: BrandColors) {
+function renderPng(input: CertificateInput, brand: ExportBrand) {
   return captureCertificate(input, {
-    colors,
+    brand,
     viewport: {
       width: CERT_WIDTH_PX,
       height: CERT_HEIGHT_PX,

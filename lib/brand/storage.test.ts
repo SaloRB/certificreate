@@ -63,8 +63,22 @@ describe("parseBrandSettings", () => {
     expect(parseBrandSettings(undefined)).toEqual(DEFAULT_BRAND_SETTINGS);
   });
 
-  it("ignores a logo that is not a string, ahead of 6b", () => {
+  it("ignores a logo that is not a string", () => {
     expect(parseBrandSettings({ logoDataUrl: 7 }).logoDataUrl).toBeNull();
+  });
+
+  it("drops an unusable stored logo without dropping the record", () => {
+    expect(
+      parseBrandSettings({
+        logoDataUrl: "https://example.com/logo.png",
+        instructor: "Ada Lovelace",
+        colors: { "--color-cert-ink": "#101010" },
+      }),
+    ).toEqual({
+      logoDataUrl: null,
+      instructor: "Ada Lovelace",
+      colors: { "--color-cert-ink": "#101010" },
+    });
   });
 });
 

@@ -12,6 +12,7 @@ import { resolveInstructor } from "@/lib/brand/storage";
 import { DEFAULT_CERTIFICATE_DRAFT } from "@/lib/certificate-defaults";
 import { useBrandSettings } from "@/lib/hooks/use-brand-settings";
 import { getTemplate, resolveTemplateId } from "@/lib/templates/resolve";
+import type { ExportBrand } from "@/types/brand";
 import type { CertificateDraft, CertificateInput } from "@/types/certificate";
 
 export function Editor() {
@@ -39,6 +40,10 @@ export function Editor() {
   };
 
   const template = getTemplate(resolveTemplateId(input.templateId));
+  const brand: ExportBrand = {
+    colors: settings.colors,
+    logoDataUrl: settings.logoDataUrl,
+  };
 
   return (
     <main className="mx-auto grid w-full max-w-[1500px] grid-cols-1 items-start gap-6 p-4 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-8 lg:p-8">
@@ -65,11 +70,15 @@ export function Editor() {
               {template.name} &middot; A4 landscape
             </span>
           </div>
-          <DownloadButtons input={input} colors={settings.colors} />
+          <DownloadButtons input={input} brand={brand} />
         </div>
 
         <CertificateFit className="mx-auto max-w-[900px]">
-          <Certificate input={input} colors={settings.colors} />
+          <Certificate
+            input={input}
+            colors={settings.colors}
+            logoDataUrl={settings.logoDataUrl}
+          />
         </CertificateFit>
       </div>
     </main>

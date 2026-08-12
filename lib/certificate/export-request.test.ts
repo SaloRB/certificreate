@@ -22,7 +22,7 @@ describe("parseCertificateInput", () => {
     expect(result).toEqual({
       ok: true,
       input: { ...VALID, recipientName: "Ada" },
-      colors: {},
+      brand: { colors: {}, logoDataUrl: null },
     });
   });
 
@@ -35,7 +35,10 @@ describe("parseCertificateInput", () => {
     expect(result).toEqual({
       ok: true,
       input: VALID,
-      colors: { "--color-cert-paper": "#fdf3d7" },
+      brand: {
+        colors: { "--color-cert-paper": "#fdf3d7" },
+        logoDataUrl: null,
+      },
     });
   });
 
@@ -49,7 +52,34 @@ describe("parseCertificateInput", () => {
       expect(parseCertificateInput({ ...VALID, colors })).toEqual({
         ok: true,
         input: VALID,
-        colors: {},
+        brand: { colors: {}, logoDataUrl: null },
+      });
+    }
+  });
+
+  it("keeps a usable brand logo from the body", () => {
+    const logoDataUrl = "data:image/png;base64,AAA=";
+
+    expect(parseCertificateInput({ ...VALID, logoDataUrl })).toEqual({
+      ok: true,
+      input: VALID,
+      brand: { colors: {}, logoDataUrl },
+    });
+  });
+
+  it("drops an unusable logo instead of failing the export", () => {
+    for (const logoDataUrl of [
+      "https://example.com/logo.png",
+      "data:image/gif;base64,AAA=",
+      "data:text/html;base64,AAA=",
+      42,
+      null,
+      undefined,
+    ]) {
+      expect(parseCertificateInput({ ...VALID, logoDataUrl })).toEqual({
+        ok: true,
+        input: VALID,
+        brand: { colors: {}, logoDataUrl: null },
       });
     }
   });
@@ -88,7 +118,7 @@ describe("parseCertificateInput", () => {
       expect(result).toEqual({
         ok: true,
         input: { ...VALID, templateId: template.id },
-        colors: {},
+        brand: { colors: {}, logoDataUrl: null },
       });
     }
   });

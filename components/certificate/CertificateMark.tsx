@@ -1,5 +1,6 @@
-const SIZE = 121;
-const CENTRE = SIZE / 2;
+export const MARK_SIZE = 121;
+
+const CENTRE = MARK_SIZE / 2;
 const DOT_RADIUS = 5.6;
 const DOT_GAP_X = 14.7;
 
@@ -14,12 +15,35 @@ const DOTS = [
   [0, 24.4],
 ] as const;
 
-export function CertificateMark() {
+interface CertificateMarkProps {
+  /** A brand logo, already validated. Takes the mark's slot when present. */
+  logoDataUrl?: string | null;
+}
+
+/** The default mark, or the user's logo fitted into the same square so no
+ *  template has to lay out two different shapes. */
+export function CertificateMark({ logoDataUrl }: CertificateMarkProps) {
+  if (logoDataUrl) {
+    return (
+      <div
+        className="flex items-center justify-center"
+        style={{ width: MARK_SIZE, height: MARK_SIZE }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- a data URL has nothing for the image optimiser to fetch */}
+        <img
+          src={logoDataUrl}
+          alt=""
+          className="max-h-full max-w-full object-contain"
+        />
+      </div>
+    );
+  }
+
   return (
     <svg
-      width={SIZE}
-      height={SIZE}
-      viewBox={`0 0 ${SIZE} ${SIZE}`}
+      width={MARK_SIZE}
+      height={MARK_SIZE}
+      viewBox={`0 0 ${MARK_SIZE} ${MARK_SIZE}`}
       fill="none"
       aria-hidden="true"
     >

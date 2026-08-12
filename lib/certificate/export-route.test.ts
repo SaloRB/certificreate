@@ -70,13 +70,13 @@ describe("handleExportRequest", () => {
       options({ render }),
     );
 
-    expect(render).toHaveBeenCalledWith(
-      { ...VALID, recipientName: "Ada" },
-      {},
-    );
+    expect(render).toHaveBeenCalledWith({ ...VALID, recipientName: "Ada" }, {
+      colors: {},
+      logoDataUrl: null,
+    });
   });
 
-  it("hands the validated brand colours to the renderer", async () => {
+  it("hands the validated brand values to the renderer", async () => {
     const render = vi.fn(async () => BYTES);
 
     await handleExportRequest(
@@ -87,13 +87,15 @@ describe("handleExportRequest", () => {
             "--color-cert-ink": "#123456",
             "--color-cert-paper": "red;background:url(x)",
           },
+          logoDataUrl: "data:image/png;base64,AAA=",
         }),
       ),
       options({ render }),
     );
 
     expect(render).toHaveBeenCalledWith(VALID, {
-      "--color-cert-ink": "#123456",
+      colors: { "--color-cert-ink": "#123456" },
+      logoDataUrl: "data:image/png;base64,AAA=",
     });
   });
 

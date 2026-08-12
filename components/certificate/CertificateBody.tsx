@@ -69,9 +69,13 @@ function SignatureBlock({ value, caption, centre }: SignatureBlockProps) {
 
 interface CertificateBodyProps {
   input: CertificateInput;
+  logoDataUrl?: string | null;
 }
 
-export function CertificateBody({ input }: CertificateBodyProps) {
+export function CertificateBody({
+  input,
+  logoDataUrl,
+}: CertificateBodyProps) {
   return (
     <div className="absolute inset-0 text-center">
       <h1
@@ -161,7 +165,7 @@ export function CertificateBody({ input }: CertificateBodyProps) {
         style={{ top: TOP.mark, left: 500 }}
         data-certificate-mark
       >
-        <CertificateMark />
+        <CertificateMark logoDataUrl={logoDataUrl} />
       </div>
 
       <SignatureBlock

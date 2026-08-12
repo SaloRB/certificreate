@@ -1,12 +1,12 @@
 "use client";
 
 import { useCertificateDownload } from "@/lib/hooks/use-certificate-download";
-import type { BrandColors } from "@/types/brand";
+import type { ExportBrand } from "@/types/brand";
 import type { CertificateInput } from "@/types/certificate";
 
 interface DownloadButtonsProps {
   input: CertificateInput;
-  colors: BrandColors;
+  brand: ExportBrand;
 }
 
 interface DownloadButtonProps {
@@ -43,7 +43,7 @@ function DownloadButton({
   );
 }
 
-export function DownloadButtons({ input, colors }: DownloadButtonsProps) {
+export function DownloadButtons({ input, brand }: DownloadButtonsProps) {
   const png = useCertificateDownload("/api/export/png", "certificate.png");
   const pdf = useCertificateDownload("/api/export/pdf", "certificate.pdf");
 
@@ -54,13 +54,13 @@ export function DownloadButtons({ input, colors }: DownloadButtonsProps) {
           label="Download PDF"
           isPending={pdf.isPending}
           variant="secondary"
-          onClick={() => pdf.download(input, colors)}
+          onClick={() => pdf.download(input, brand)}
         />
         <DownloadButton
           label="Download PNG"
           isPending={png.isPending}
           variant="primary"
-          onClick={() => png.download(input, colors)}
+          onClick={() => png.download(input, brand)}
         />
       </div>
 
