@@ -6,6 +6,7 @@ import {
 } from "@/lib/certificate/export-request";
 import { toRenderParams } from "@/lib/certificate/render-params";
 import { withPage } from "@/lib/puppeteer/browser";
+import { renderOrigin } from "@/lib/puppeteer/render-origin";
 import {
   CERT_HEIGHT_PX,
   CERT_WIDTH_PX,
@@ -19,9 +20,8 @@ const DEVICE_SCALE_FACTOR = 2;
 
 async function renderPng(
   input: CertificateInput,
-  origin: string,
 ): Promise<Uint8Array<ArrayBuffer>> {
-  const url = `${origin}/render/certificate?${toRenderParams(input)}`;
+  const url = `${renderOrigin()}/render/certificate?${toRenderParams(input)}`;
 
   return withPage(async (page) => {
     await page.setViewport({
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const png = await renderPng(parsed.input, new URL(request.url).origin);
+    const png = await renderPng(parsed.input);
     return new Response(png, {
       headers: {
         "Content-Type": "image/png",
