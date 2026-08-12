@@ -93,24 +93,97 @@ restored the editor mockup from git as `blueprint/references/editor-mockup.html`
 plus `theme.css` (it is the app-chrome design reference) and synced the four
 certificate colours to the shipped tokens before using it.
 
-### F-07 [P3] fixed - Preview scaling relies on calc() length division
+### F-14 [P3] open - Only the PNG path pins the viewport, so the two exports load the page differently
 
-**File:** app/globals.css:64
+**File:** app/api/export/pdf/route.ts:14
 **Found:** 2026-08-11 by /audit (scope: current)
-**Why it matters:** `scale(min(1, calc(100cqw / 1123px)))` divides a length by a
-length, a CSS Values 4 feature. It is verified working in the Chromium used for
-this feature's evidence, but was not tested in Safari or Firefox. If a browser
-rejects it, the declaration is invalid, the sheet renders unscaled, and
-`.cert-fit`'s `overflow: hidden` crops the certificate silently instead of
-failing visibly. Unverified because no cross-browser check has been run.
-**Suggested fix:** Check Safari and Firefox when feature 2 builds the real
-preview. If unsupported, fall back to a JS-set scale variable, or accept the
-uncropped overflow by removing `overflow: hidden`.
-**Resolution:** Confirmed real in feature 2 step 4. Firefox 1490 dropped the
-declaration (`transform: none`), rendering the sheet at 1123x794 inside a 900px
-`.cert-fit` and cropping it silently, exactly as predicted; WebKit was fine. The
-`tan(atan2())` workaround was tried and broke WebKit instead. Fixed with the
-finding's named fallback: `components/certificate/CertificateFit.tsx` measures the
-container with a `ResizeObserver` and sets `--cert-scale`, and `.cert-fit` no
-longer needs `container-type`. All three engines now compute the same 0.801425
-matrix with no cropping.
+**Why it matters:** `captureCertificate`'s viewport is optional, and only the PNG
+route passes one. The PDF route therefore loads `/render/certificate` at
+Puppeteer's default 800x600 and awaits `document.fonts.ready` at that width, then
+Chrome re-lays-out at the 1123.84px paper when `page.pdf()` runs. The PNG loads and
+captures at one pinned 1123x794 size throughout. Harmless today because the render
+page has no media queries, container queries, or JS measurement, but this project's
+stated premise is that preview and export never diverge, and `CertificateFit`
+already shows the codebase reaching for JS-measured layout. The first responsive or
+measured element on that route would silently make the two formats disagree.
+**Suggested fix:** Pass the same viewport from the PDF route, or make the sheet
+size the default inside `captureCertificate` so both formats load identically and a
+caller has to opt out deliberately.
+**Resolution:**
+
+### F-15 [P3] open - Unreferenced /preview route duplicates the default certificate input
+
+**File:** app/preview/page.tsx:5
+**Found:** 2026-08-11 by /audit (scope: current)
+**Why it matters:** Nothing links to or imports `/preview`; it is a feature 1
+scaffold superseded by the real editor at `/`, but it still builds and deploys as a
+public route. Its `PLACEHOLDER` constant also repeats all five fields of
+`DEFAULT_CERTIFICATE_INPUT` (`lib/certificate-defaults.ts:6`) verbatim, so the two
+drift apart the moment either is edited, and features 6a and 7 are both scheduled
+to change that default. Not introduced by this feature, but it sits in the export
+path's neighbourhood and is a second, stale rendering of the same component.
+**Suggested fix:** Delete `app/preview/page.tsx`. If it is still wanted as a
+harness, import `DEFAULT_CERTIFICATE_INPUT` instead of restating it.
+**Resolution:**
+
+### F-09 [P3] open - pageRanges "1" hides overflow instead of failing on it
+
+**File:** app/api/export/pdf/route.ts:30
+**Found:** 2026-08-11 by /audit (scope: current)
+**Why it matters:** `pageRanges: "1"` was added as a guard against a blank second
+page, but it does not distinguish a blank overflow page from a real one. If a
+future template or a long field pushes content past the first page, that content is
+silently dropped and the export still looks successful. This project has twice been
+bitten by exactly this failure mode (F-02's silent crop, F-07's silent crop), so
+silent truncation is a known-costly pattern here.
+**Suggested fix:** Keep `pageRanges` for the output, but assert the expectation:
+after `page.pdf()`, or via a cheap layout check before it, confirm the document is
+one page and throw if not, so `handleExportRequest` turns it into a logged 500
+rather than a quietly wrong file.
+**Resolution:**
+
+### F-10 [P3] open - Load-bearing Uint8Array copy in the PDF route has no comment
+
+**File:** app/api/export/pdf/route.ts:32
+**Found:** 2026-08-11 by /audit (scope: current)
+**Why it matters:** `new Uint8Array(pdf)` is required, not cosmetic: `page.pdf()`
+is typed `Promise<Uint8Array>` (so `Uint8Array<ArrayBufferLike>`) while
+`ExportOptions.render` requires `Uint8Array<ArrayBuffer>`. The identical copy in
+`app/api/export/png/route.ts:27` carries a comment explaining why and warning
+against removing it; this one does not, so the two copies of the same trick now
+disagree on whether it needs explaining. A reader tidying "redundant" allocations
+would break the PDF route's build.
+**Suggested fix:** Mirror the PNG route's comment, or move the copy into
+`handleExportRequest` by widening `ExportOptions.render` to return
+`Uint8Array<ArrayBufferLike>` so neither route repeats it.
+**Resolution:**
+
+### F-11 [P2] unverified - Download anchor is never attached to the document
+
+**File:** lib/hooks/use-certificate-download.ts:13
+**Found:** 2026-08-11 by /audit (scope: current)
+**Why it matters:** `saveBlob` creates a detached `<a>`, clicks it, and revokes the
+object URL on the very next statement. Both parts are patterns that historically
+fail outside Chromium: some engines ignore a programmatic click on an anchor that
+is not in the document, and revoking synchronously can race a download that has not
+yet started. Verified working in Chromium for both formats (31KB PDF, 122KB PNG);
+not tested in Firefox or Safari. This is pre-existing feature 3 code, but feature 4
+doubles the number of buttons that depend on it, and F-07 already proved this
+project's Firefox exposure is real rather than theoretical.
+**Suggested fix:** Confirm in Firefox and Safari first, since the finding is
+unverified. If it fails, append the anchor to `document.body` before `click()`,
+remove it after, and revoke the URL in a `setTimeout` or on the next task.
+**Resolution:**
+
+### F-12 [P3] open - Comment in the download hook describes feature 4 as future work
+
+**File:** lib/hooks/use-certificate-download.ts:22
+**Found:** 2026-08-11 by /audit (scope: current)
+**Why it matters:** The doc comment reads "Feature 4 reuses it for PDF by passing a
+different endpoint." Feature 4 has now done exactly that, so the comment points a
+reader at planned work that already shipped. Small, but it is the kind of stale
+forward reference that accumulates into comments no one trusts.
+**Suggested fix:** Restate it in the present tense, describing what the hook is
+rather than who will use it next: it posts a `CertificateInput` to an export
+endpoint and saves the response under the server-supplied filename.
+**Resolution:**
