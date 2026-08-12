@@ -13,3 +13,8 @@ export interface CertificateInput {
   instructor: string;
   templateId: string;
 }
+
+/** A certificate before its signatory is known. The editor keeps the instructor
+ *  out of its draft state so "the brand default" and "edited for this one
+ *  certificate" stay distinct without mirroring settings into form state. */
+export type CertificateDraft = Omit<CertificateInput, "instructor">;

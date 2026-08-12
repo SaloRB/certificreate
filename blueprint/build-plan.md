@@ -8,7 +8,7 @@ v1 is a simple, local-only tool: no auth, no database, everything the user keeps
 - [x] 4. **PDF export** - same render pipeline (shared browser instance with PNG export) outputs a print-ready landscape PDF with the correct page size and margins (`page.pdf({ landscape: true, printBackground: true })`)
 - [x] 5. **Template/style system** - a few templates sharing one theme (CSS variables) plus a picker in the UI, structured so new styles drop in cleanly
 - [ ] 6. **Brand settings (local)** - logo upload, colors, and instructor name saved in local storage and applied to the chosen template
-  - [ ] 6a. **Instructor + colors** - BrandSettings type, a local-storage store, a settings panel, instructor default, and theme-color overrides applied to the preview and the export
+  - [x] 6a. **Instructor + colors** - BrandSettings type, a local-storage store, a settings panel, instructor default, and theme-color overrides applied to the preview and the export
   - [ ] 6b. **Logo upload** - upload a logo (data URL) into brand settings, replace the placeholder mark in the templates, and carry it through the export pipeline
 - [ ] 7. **Certificate history (local)** - save each generated certificate to local storage with a history list to re-open and re-download, and remember the last form values
 - [ ] 8. **Input polish** - date picker and formatting, Zod validation, long-name auto-fit, and empty states

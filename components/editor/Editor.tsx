@@ -4,20 +4,39 @@ import { useState } from "react";
 
 import { Certificate } from "@/components/certificate/Certificate";
 import { CertificateFit } from "@/components/certificate/CertificateFit";
+import { BrandSettingsPanel } from "@/components/editor/BrandSettingsPanel";
 import { CertificateForm } from "@/components/editor/CertificateForm";
 import { DownloadButtons } from "@/components/editor/DownloadButtons";
 import { TemplatePicker } from "@/components/editor/TemplatePicker";
-import { DEFAULT_CERTIFICATE_INPUT } from "@/lib/certificate-defaults";
+import { resolveInstructor } from "@/lib/brand/storage";
+import { DEFAULT_CERTIFICATE_DRAFT } from "@/lib/certificate-defaults";
+import { useBrandSettings } from "@/lib/hooks/use-brand-settings";
 import { getTemplate, resolveTemplateId } from "@/lib/templates/resolve";
-import type { CertificateInput } from "@/types/certificate";
+import type { CertificateDraft, CertificateInput } from "@/types/certificate";
 
 export function Editor() {
-  const [input, setInput] = useState<CertificateInput>(
-    DEFAULT_CERTIFICATE_INPUT,
+  const { settings, update: updateSettings } = useBrandSettings();
+  const [draft, setDraft] = useState<CertificateDraft>(
+    DEFAULT_CERTIFICATE_DRAFT,
+  );
+  // Null means "follow brand settings". Deriving the instructor rather than
+  // seeding it into form state is what keeps a settings change from clobbering a
+  // per-certificate edit, in either direction.
+  const [instructorOverride, setInstructorOverride] = useState<string | null>(
+    null,
   );
 
-  const update = (patch: Partial<CertificateInput>) =>
-    setInput((current) => ({ ...current, ...patch }));
+  const input: CertificateInput = {
+    ...draft,
+    instructor: instructorOverride ?? resolveInstructor(settings),
+  };
+
+  const update = ({ instructor, ...rest }: Partial<CertificateInput>) => {
+    if (instructor !== undefined) setInstructorOverride(instructor);
+    if (Object.keys(rest).length > 0) {
+      setDraft((current) => ({ ...current, ...rest }));
+    }
+  };
 
   const template = getTemplate(resolveTemplateId(input.templateId));
 
@@ -28,6 +47,11 @@ export function Editor() {
         <TemplatePicker
           value={input.templateId}
           onChange={(templateId) => update({ templateId })}
+        />
+        <BrandSettingsPanel
+          settings={settings}
+          template={template}
+          onChange={updateSettings}
         />
       </div>
 
@@ -41,11 +65,11 @@ export function Editor() {
               {template.name} &middot; A4 landscape
             </span>
           </div>
-          <DownloadButtons input={input} />
+          <DownloadButtons input={input} colors={settings.colors} />
         </div>
 
         <CertificateFit className="mx-auto max-w-[900px]">
-          <Certificate input={input} />
+          <Certificate input={input} colors={settings.colors} />
         </CertificateFit>
       </div>
     </main>

@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 /* `static` so every token is emitted as a CSS variable even before a utility
-   references it. The certificate template reads these vars directly, and feature
-   6a overrides them at runtime; tree-shaken tokens would resolve to nothing. */
+   references it. The certificate template reads these vars directly, and brand
+   settings override them at runtime; tree-shaken tokens would resolve to
+   nothing. */
 @theme static {
   /* app chrome - surfaces */
   --color-bg: #0b0d10;
@@ -24,6 +25,9 @@
   --color-accent-faint: rgba(110, 163, 204, 0.12);
   --color-focus-ring: rgba(110, 163, 204, 0.45);
 
+  /* invalid input, currently only the brand colour hex box */
+  --color-danger: #c8697a;
+
   /* form field states */
   --color-field-bg: #0e1114;
   --color-field-border: #262c35;
@@ -34,9 +38,9 @@
      These declarations exist so Tailwind emits the `bg-cert-paper` /
      `text-cert-ink` / `font-cert-*` utilities and so a sheet always has a
      colour; the values a certificate actually paints come from the selected
-     template's `themeVars` in lib/templates/definitions.ts, set on the sheet
-     element by Certificate.tsx. Feature 6a layers brand colours over the same
-     properties there, so nothing downstream may hardcode these values. */
+     template's `themeVars` in lib/templates/definitions.ts, with the user's
+     brand colours layered over them, set on the sheet element by
+     Certificate.tsx. Nothing downstream may hardcode these values. */
   --color-cert-paper: #ffffff;
   --color-cert-ink: #14181c;
   --color-cert-ink-soft: #3d444c;

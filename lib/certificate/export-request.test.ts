@@ -22,7 +22,36 @@ describe("parseCertificateInput", () => {
     expect(result).toEqual({
       ok: true,
       input: { ...VALID, recipientName: "Ada" },
+      colors: {},
     });
+  });
+
+  it("keeps valid brand colours from the body", () => {
+    const result = parseCertificateInput({
+      ...VALID,
+      colors: { "--color-cert-paper": "#fdf3d7" },
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      input: VALID,
+      colors: { "--color-cert-paper": "#fdf3d7" },
+    });
+  });
+
+  it("drops unusable colours instead of failing the export", () => {
+    for (const colors of [
+      { "--color-cert-paper": "rgb(0,0,0)" },
+      { "--font-cert-display": "Comic Sans" },
+      "not an object",
+      undefined,
+    ]) {
+      expect(parseCertificateInput({ ...VALID, colors })).toEqual({
+        ok: true,
+        input: VALID,
+        colors: {},
+      });
+    }
   });
 
   it("rejects a whitespace-only field", () => {
@@ -59,6 +88,7 @@ describe("parseCertificateInput", () => {
       expect(result).toEqual({
         ok: true,
         input: { ...VALID, templateId: template.id },
+        colors: {},
       });
     }
   });

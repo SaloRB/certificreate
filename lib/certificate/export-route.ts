@@ -2,6 +2,7 @@ import {
   certificateFileName,
   parseCertificateInput,
 } from "@/lib/certificate/export-request";
+import type { BrandColors } from "@/types/brand";
 import type { CertificateInput } from "@/types/certificate";
 
 const GENERIC_ERROR = "Could not generate the certificate. Please try again.";
@@ -9,7 +10,10 @@ const GENERIC_ERROR = "Could not generate the certificate. Please try again.";
 interface ExportOptions {
   contentType: string;
   extension: string;
-  render: (input: CertificateInput) => Promise<Uint8Array<ArrayBuffer>>;
+  render: (
+    input: CertificateInput,
+    colors: BrandColors,
+  ) => Promise<Uint8Array<ArrayBuffer>>;
 }
 
 /** Parse, validate, render, and attach the download headers. Shared by both
@@ -32,7 +36,7 @@ export async function handleExportRequest(
   }
 
   try {
-    const file = await render(parsed.input);
+    const file = await render(parsed.input, parsed.colors);
     return new Response(file, {
       headers: {
         "Content-Type": contentType,

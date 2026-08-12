@@ -70,7 +70,31 @@ describe("handleExportRequest", () => {
       options({ render }),
     );
 
-    expect(render).toHaveBeenCalledWith({ ...VALID, recipientName: "Ada" });
+    expect(render).toHaveBeenCalledWith(
+      { ...VALID, recipientName: "Ada" },
+      {},
+    );
+  });
+
+  it("hands the validated brand colours to the renderer", async () => {
+    const render = vi.fn(async () => BYTES);
+
+    await handleExportRequest(
+      post(
+        JSON.stringify({
+          ...VALID,
+          colors: {
+            "--color-cert-ink": "#123456",
+            "--color-cert-paper": "red;background:url(x)",
+          },
+        }),
+      ),
+      options({ render }),
+    );
+
+    expect(render).toHaveBeenCalledWith(VALID, {
+      "--color-cert-ink": "#123456",
+    });
   });
 
   it("rejects a body that is not JSON", async () => {

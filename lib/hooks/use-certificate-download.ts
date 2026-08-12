@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import type { BrandColors } from "@/types/brand";
 import type { CertificateInput } from "@/types/certificate";
 
 const FALLBACK_ERROR = "Could not generate the certificate. Please try again.";
@@ -25,14 +26,14 @@ export function useCertificateDownload(endpoint: string, fallbackName: string) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const download = async (input: CertificateInput) => {
+  const download = async (input: CertificateInput, colors?: BrandColors) => {
     setIsPending(true);
     setError(null);
     try {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
+        body: JSON.stringify({ ...input, colors }),
       });
 
       if (!response.ok) {

@@ -7,7 +7,7 @@ import { fromRenderParams } from "@/lib/certificate/render-params";
 export default async function RenderCertificatePage({
   searchParams,
 }: PageProps<"/render/certificate">) {
-  const input = fromRenderParams(await searchParams);
+  const { input, colors } = fromRenderParams(await searchParams);
 
   // The white backdrop is load-bearing for the PDF, which photographs the whole
   // page rather than the sheet: Chrome rounds the requested paper size up by a
@@ -15,7 +15,7 @@ export default async function RenderCertificatePage({
   // as a hairline down the right and bottom edges.
   return (
     <div className="min-h-screen w-full shrink-0 bg-cert-paper">
-      <Certificate input={input} />
+      <Certificate input={input} colors={colors} />
     </div>
   );
 }
