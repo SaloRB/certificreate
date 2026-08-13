@@ -12,7 +12,7 @@ v1 is a simple, local-only tool: no auth, no database, everything the user keeps
   - [x] 6b. **Logo upload** - upload a logo (data URL) into brand settings, replace the placeholder mark in the templates, and carry it through the export pipeline
 - [x] 7. **Certificate history (local)** - save each generated certificate to local storage with a history list to re-open and re-download, and remember the last form values
 - [x] 8. **Input polish** - date picker and formatting, Zod validation, long-name auto-fit, and empty states
-- [ ] 9. **Production hardening on Render** - instance sizing check under real renders, render queue behavior under concurrent requests, env config cleanup, custom domain
+- [x] 9. **Production hardening on Render** - instance sizing check under real renders, render queue behavior under concurrent requests, env config cleanup, custom domain
 
 ## Deployment notes (Render + Puppeteer)
 

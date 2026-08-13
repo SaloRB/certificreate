@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { handleExportRequest } from "@/lib/certificate/export-route";
+import {
+  RenderOverloadError,
+  RenderTimeoutError,
+} from "@/lib/puppeteer/errors";
 import type { CertificateInput } from "@/types/certificate";
 
 const VALID: CertificateInput = {
@@ -150,5 +154,59 @@ describe("handleExportRequest", () => {
       error: "Could not generate the certificate. Please try again.",
     });
     expect(consoleError).toHaveBeenCalled();
+  });
+
+  it("answers 503 with Retry-After when the render queue is full", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const response = await handleExportRequest(
+      post(JSON.stringify(VALID)),
+      options({
+        render: async () => {
+          throw new RenderOverloadError(90);
+        },
+      }),
+    );
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("Retry-After")).toBe("90");
+    await expect(response.json()).resolves.toEqual({
+      error:
+        "The certificate service is busy right now. Please try again in a moment.",
+    });
+  });
+
+  it("answers 504 when a render passes its deadline", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = await handleExportRequest(
+      post(JSON.stringify(VALID)),
+      options({
+        render: async () => {
+          throw new RenderTimeoutError();
+        },
+      }),
+    );
+
+    expect(response.status).toBe(504);
+    expect(response.headers.get("Retry-After")).toBeNull();
+    await expect(response.json()).resolves.toEqual({
+      error: "The certificate took too long to render. Please try again.",
+    });
+  });
+
+  it("keeps the queue's internal wording out of the response", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const response = await handleExportRequest(
+      post(JSON.stringify(VALID)),
+      options({
+        render: async () => {
+          throw new RenderOverloadError(90);
+        },
+      }),
+    );
+
+    expect(await response.text()).not.toContain("queue");
   });
 });

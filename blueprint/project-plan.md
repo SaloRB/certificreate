@@ -87,3 +87,24 @@ headline, letter-spaced small-cap labels, the blue double-line border with corne
 flourishes, and the centered logo mark between the instructor and date lines. The
 app chrome around it is clean and modern (dark-mode-first per coding standards);
 the certificate artifact stays light and print-friendly. No login anywhere in v1.
+
+## 8. Deployment - Where does this run?
+
+A Render web service (persistent container, not serverless), deployed manually
+once PNG export worked locally and auto-deploying on push since. Build with
+`npm run build`, serve with `npm run start`.
+
+Settled by feature 9, measured against a real render pipeline:
+
+- **Health check path: `/api/health`.** Reports liveness and render-pool state,
+  and never starts Chrome, so polling an idle instance costs nothing.
+- **Instance: Standard (2GB) preferred, Starter as the floor.** No free tier, so
+  the service never spins down into a cold Chrome launch.
+- **Concurrency: 2 renders at once, 4 more queued.** Past that the export routes
+  answer 503 with `Retry-After` rather than holding connections open. A render
+  is abandoned at 45 seconds, and a crashed Chrome is relaunched on the next
+  request.
+- **No environment variables.** `PORT` is the only one read, and only so Chrome
+  can reach the render page over loopback.
+- **Custom domain** is added by hand in the Render dashboard; the checklist and
+  the measured numbers live in `README.md` under Operations.
